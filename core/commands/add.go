@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/ipfs/go-ipfs/core/commands/cmdenv"
+	logging "github.com/ipfs/go-log"
 
 	cmds "github.com/ipfs/go-ipfs-cmds"
 	files "github.com/ipfs/go-ipfs-files"
@@ -17,6 +18,8 @@ import (
 	mh "github.com/multiformats/go-multihash"
 	pb "gopkg.in/cheggaaa/pb.v1"
 )
+
+var addlog = logging.Logger("cmds/add")
 
 // ErrDepthLimitExceeded indicates that the max depth has been exceeded.
 var ErrDepthLimitExceeded = fmt.Errorf("depth limit exceeded")
@@ -249,7 +252,9 @@ You can now check what blocks have been created by:
 				} else {
 					output.Name = path.Join(addit.Name(), output.Name)
 				}
-
+				addlog.Info("Addd log   ADD it name  ", addit.Name())
+				addlog.Info("Addd log   output name  ", output.Name)
+				addlog.Info("Addd log   Hash  ", h)
 				if err := res.Emit(&AddEvent{
 					Name:  output.Name,
 					Hash:  h,

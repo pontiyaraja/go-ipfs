@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	blockstore "github.com/ipfs/go-ipfs-blockstore"
+	exchange "github.com/ipfs/go-ipfs-exchange-interface"
+	offline "github.com/ipfs/go-ipfs-exchange-offline"
 	"github.com/ipfs/go-ipfs/core/node/helpers"
 	"github.com/ipfs/go-ipfs/pin"
 	"github.com/ipfs/go-ipfs/repo"
@@ -13,10 +16,7 @@ import (
 	"github.com/ipfs/go-blockservice"
 	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-datastore"
-	"github.com/ipfs/go-ipfs-blockstore"
-	"github.com/ipfs/go-ipfs-exchange-interface"
-	"github.com/ipfs/go-ipfs-exchange-offline"
-	"github.com/ipfs/go-ipld-format"
+	format "github.com/ipfs/go-ipld-format"
 	"github.com/ipfs/go-merkledag"
 	"github.com/ipfs/go-mfs"
 	"github.com/ipfs/go-unixfs"
@@ -75,13 +75,17 @@ func OnlineExchange(provide bool) interface{} {
 
 // Files loads persisted MFS root
 func Files(mctx helpers.MetricsCtx, lc fx.Lifecycle, repo repo.Repo, dag format.DAGService) (*mfs.Root, error) {
+	fmt.Println("here ---------")
 	dsk := datastore.NewKey("/local/filesroot")
+	fmt.Println(dsk.String())
 	pf := func(ctx context.Context, c cid.Cid) error {
+		fmt.Println(c.KeyString(), c.String(), c.Version())
 		return repo.Datastore().Put(dsk, c.Bytes())
 	}
 
 	var nd *merkledag.ProtoNode
 	val, err := repo.Datastore().Get(dsk)
+	fmt.Println("value -------  ", string(val))
 	ctx := helpers.LifecycleCtx(mctx, lc)
 
 	switch {
@@ -119,6 +123,6 @@ func Files(mctx helpers.MetricsCtx, lc fx.Lifecycle, repo repo.Repo, dag format.
 			return root.Close()
 		},
 	})
-
+	fmt.Println("Root --------   ", root)
 	return root, err
 }

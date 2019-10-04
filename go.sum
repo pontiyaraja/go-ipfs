@@ -6,6 +6,8 @@ github.com/AndreasBriese/bbloom v0.0.0-20190306092124-e2d15f34fcf9/go.mod h1:bOv
 github.com/AndreasBriese/bbloom v0.0.0-20190823232136-616930265c33 h1:2/E2IVdZoHh/aCBq4Gchy2MGWkTmbReP46/Wnt9qhKs=
 github.com/AndreasBriese/bbloom v0.0.0-20190823232136-616930265c33/go.mod h1:bOvUY6CB00SOBii9/FifXqc0awNKxLFCL/+pkDPuyl8=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/KIPFoundation/kip-log v0.0.0-20190719131644-fdc149cd2038 h1:RCkiFZqpAaawtBmpvysafPqYMVoEqm4FPw23pLkQPGw=
+github.com/KIPFoundation/kip-log v0.0.0-20190719131644-fdc149cd2038/go.mod h1:PWuHJIPg5Vz6x/A5jUgWsPddH3/JoL1/G7w1TFpjvEY=
 github.com/Kubuxu/go-os-helper v0.0.1 h1:EJiD2VUQyh5A9hWJLmc6iWg6yIcJ7jpBcwC8GMGXfDk=
 github.com/Kubuxu/go-os-helper v0.0.1/go.mod h1:N8B+I7vPCT80IcP58r50u4+gEEcsZETFUpAzWW2ep1Y=
 github.com/Stebalien/go-bitfield v0.0.0-20180330043415-076a62f9ce6e/go.mod h1:3oM7gXIttpYDAJXpVNnSCiUMYBLIZ6cb1t+Ip982MRo=

@@ -34,8 +34,7 @@ import (
 	goprocess "github.com/jbenet/goprocess"
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr-net"
-	prometheus "github.com/prometheus/client_golang/prometheus"
-	promauto "github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 const (
@@ -202,8 +201,8 @@ func daemonFunc(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment
 	}
 
 	// let the user know we're going.
-	fmt.Printf("Initializing daemon...\n")
-
+	fmt.Printf("Initializing daemon... Pandi ================== -------------   \n")
+	log.Info("its working fine")
 	defer func() {
 		if _err != nil {
 			// Print an extra line before any errors. This could go

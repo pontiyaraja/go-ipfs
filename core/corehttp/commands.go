@@ -161,6 +161,7 @@ func CheckVersionOption() ServeOption {
 			if strings.HasPrefix(r.URL.Path, APIPath) {
 				cmdqry := r.URL.Path[len(APIPath):]
 				pth := path.SplitList(cmdqry)
+				
 
 				// backwards compatibility to previous version check
 				if len(pth) >= 2 && pth[1] != "version" {
