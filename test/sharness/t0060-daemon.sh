@@ -74,7 +74,7 @@ test_expect_success "ipfs gateway works with the correct allowed origin port" '
 
 test_expect_success "ipfs daemon output looks good" '
   STARTFILE="ipfs cat /ipfs/$HASH_WELCOME_DOCS/readme" &&
-  echo "Initializing daemon..." >expected_daemon &&
+  echo "Initializing daemon... Pandi ......======-------333333" >expected_daemon &&
   ipfs version --all >> expected_daemon &&
   sed "s/^/Swarm listening on /" listen_addrs >>expected_daemon &&
   sed "s/^/Swarm announcing /" local_addrs >>expected_daemon &&

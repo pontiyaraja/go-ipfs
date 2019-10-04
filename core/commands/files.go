@@ -10,21 +10,31 @@ import (
 	"sort"
 	"strings"
 
+	cmds "github.com/ipfs/go-ipfs-cmds"
+	offline "github.com/ipfs/go-ipfs-exchange-offline"
 	"github.com/ipfs/go-ipfs/core"
 	"github.com/ipfs/go-ipfs/core/commands/cmdenv"
+	iface "github.com/ipfs/interface-go-ipfs-core"
 
 	"github.com/dustin/go-humanize"
 	bservice "github.com/ipfs/go-blockservice"
 	cid "github.com/ipfs/go-cid"
 	cidenc "github.com/ipfs/go-cidutil/cidenc"
+<<<<<<< HEAD
 	cmds "github.com/ipfs/go-ipfs-cmds"
 	offline "github.com/ipfs/go-ipfs-exchange-offline"
+=======
+	"github.com/ipfs/go-datastore"
+>>>>>>> debugging code
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
 	dag "github.com/ipfs/go-merkledag"
 	"github.com/ipfs/go-mfs"
 	ft "github.com/ipfs/go-unixfs"
+<<<<<<< HEAD
 	iface "github.com/ipfs/interface-go-ipfs-core"
+=======
+>>>>>>> debugging code
 	path "github.com/ipfs/interface-go-ipfs-core/path"
 	mh "github.com/multiformats/go-multihash"
 )
@@ -413,8 +423,9 @@ Examples:
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
 		var arg string
-
+		flog.Info("Pontiya is here ....................   ================== @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 		if len(req.Arguments) == 0 {
+			flog.Info("Yesss i'm sending it #############################################################")
 			arg = "/"
 		} else {
 			arg = req.Arguments[0]
@@ -545,25 +556,51 @@ Examples:
 			return err
 		}
 
+		dsk := datastore.NewKey("/local/filesroot")
+		val, err := nd.Repo.Datastore().Get(dsk)
+		flog.Info(" KEY Read Error ============     ", err)
+
+		flog.Info("Value for the MFS ROOT =======   ", val)
+
+		flog.Info("Node data File read  =========================    ", nd.Identity.String())
+
 		path, err := checkPath(req.Arguments[0])
 		if err != nil {
 			return err
 		}
+		flog.Info("Path File read  =========================    ", path)
+
+		dir := nd.FilesRoot.GetDirectory()
+		ndR, err := dir.GetNode()
+		if err != nil {
+			return err
+		}
+		for _, link := range ndR.Links() {
+			flog.Infof("Link Data  ========================================   ", link)
+		}
+		flog.Infof("Republished Data   ======    ", ndR)
 
 		fsn, err := mfs.Lookup(nd.FilesRoot, path)
 		if err != nil {
 			return err
 		}
 
+		flog.Info("FSNode File read  =========================    ", fsn)
+		flog.Info("FSNode Type File read  =========================    ", fsn.Type())
+
 		fi, ok := fsn.(*mfs.File)
 		if !ok {
 			return fmt.Errorf("%s was not a file", path)
 		}
 
+		flog.Info("File  File Read  =====================    ", fi)
+
 		rfd, err := fi.Open(mfs.Flags{Read: true})
 		if err != nil {
 			return err
 		}
+
+		flog.Infof("File  Descriptor  =================    %+v", rfd)
 
 		defer rfd.Close()
 
@@ -576,6 +613,8 @@ Examples:
 		if err != nil {
 			return err
 		}
+
+		flog.Info("Descriptor data *******************   ", filen)
 
 		if int64(offset) > filen {
 			return fmt.Errorf("offset was past end of file (%d > %d)", offset, filen)
@@ -714,7 +753,7 @@ stat' on the file or any of its ancestors.
 		if err != nil {
 			return err
 		}
-
+		flog.Info("write file run ======>>  ", path)
 		create, _ := req.Options[filesCreateOptionName].(bool)
 		mkParents, _ := req.Options[filesParentsOptionName].(bool)
 		trunc, _ := req.Options[filesTruncateOptionName].(bool)
@@ -725,11 +764,18 @@ stat' on the file or any of its ancestors.
 		if err != nil {
 			return err
 		}
+		flog.Info("prefix run ======>>  ", prefix)
+
+		flog.Info("Environment  ---------------------------- $$$$$$$$$$$$$$$$  ", env)
 
 		nd, err := cmdenv.GetNode(env)
 		if err != nil {
 			return err
 		}
+
+		flog.Info("node identity ======>>  ", nd.Identity)
+		flog.Info("node file root ======>>  ", nd.FilesRoot, nd.FilesRoot.GetDirectory())
+		flog.Info("node file root PATH ======>>  ", nd.FilesRoot, nd.FilesRoot.GetDirectory().Path())
 
 		offset, _ := req.Options[filesOffsetOptionName].(int64)
 		if offset < 0 {

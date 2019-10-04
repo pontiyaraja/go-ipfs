@@ -10,7 +10,7 @@ import (
 	coreapi "github.com/ipfs/go-ipfs/core/coreapi"
 	loader "github.com/ipfs/go-ipfs/plugin/loader"
 
-	"github.com/ipfs/go-ipfs-cmds"
+	cmds "github.com/ipfs/go-ipfs-cmds"
 	config "github.com/ipfs/go-ipfs-config"
 	logging "github.com/ipfs/go-log"
 	coreiface "github.com/ipfs/interface-go-ipfs-core"
@@ -39,6 +39,7 @@ type Context struct {
 // context. It may load it with the provided function.
 func (c *Context) GetConfig() (*config.Config, error) {
 	var err error
+	log.Info(" ROOT Config  ==================================================  ", c.ConfigRoot)
 	if c.config == nil {
 		if c.LoadConfig == nil {
 			return nil, errors.New("nil LoadConfig function")
@@ -64,6 +65,7 @@ func (c *Context) GetNode() (*core.IpfsNode, error) {
 			}
 		}
 	}
+	log.Info("GET NODE =====================================   ", c.ConfigRoot)
 	return c.node, err
 }
 

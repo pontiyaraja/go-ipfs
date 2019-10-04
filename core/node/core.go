@@ -15,6 +15,7 @@ import (
 	"github.com/ipfs/go-ipfs-exchange-offline"
 	"github.com/ipfs/go-ipfs-pinner"
 	"github.com/ipfs/go-ipld-format"
+	format "github.com/ipfs/go-ipld-format"
 	"github.com/ipfs/go-merkledag"
 	"github.com/ipfs/go-mfs"
 	"github.com/ipfs/go-unixfs"
@@ -97,7 +98,9 @@ func OnlineExchange(provide bool) interface{} {
 
 // Files loads persisted MFS root
 func Files(mctx helpers.MetricsCtx, lc fx.Lifecycle, repo repo.Repo, dag format.DAGService) (*mfs.Root, error) {
+	fmt.Println("here ---------")
 	dsk := datastore.NewKey("/local/filesroot")
+	fmt.Println(dsk.String())
 	pf := func(ctx context.Context, c cid.Cid) error {
 		rootDS := repo.Datastore()
 		if err := rootDS.Sync(blockstore.BlockPrefix); err != nil {
@@ -111,10 +114,13 @@ func Files(mctx helpers.MetricsCtx, lc fx.Lifecycle, repo repo.Repo, dag format.
 			return err
 		}
 		return rootDS.Sync(dsk)
+		fmt.Println(c.KeyString(), c.String(), c.Version())
+		return repo.Datastore().Put(dsk, c.Bytes())
 	}
 
 	var nd *merkledag.ProtoNode
 	val, err := repo.Datastore().Get(dsk)
+	fmt.Println("value -------  ", string(val))
 	ctx := helpers.LifecycleCtx(mctx, lc)
 
 	switch {
@@ -152,6 +158,6 @@ func Files(mctx helpers.MetricsCtx, lc fx.Lifecycle, repo repo.Repo, dag format.
 			return root.Close()
 		},
 	})
-
+	fmt.Println("Root --------   ", root)
 	return root, err
 }
