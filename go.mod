@@ -2,8 +2,7 @@ module github.com/ipfs/go-ipfs
 
 require (
 	bazil.org/fuse v0.0.0-20180421153158-65cc252bf669
-	github.com/KIPFoundation/kip-log v0.0.0-20190719131644-fdc149cd2038
-	github.com/Kubuxu/gocovmerge v0.0.0-20161216165753-7ecaa51963cd
+	github.com/AndreasBriese/bbloom v0.0.0-20190823232136-616930265c33 // indirect
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bren2010/proquint v0.0.0-20160323162903-38337c27106d
 	github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f
@@ -83,6 +82,8 @@ require (
 	github.com/libp2p/go-socket-activation v0.0.1
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/mr-tron/base58 v1.1.2
 	github.com/multiformats/go-multiaddr v0.1.1
 	github.com/multiformats/go-multiaddr-dns v0.1.0

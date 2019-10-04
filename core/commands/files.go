@@ -549,9 +549,10 @@ Examples:
 
 		dsk := datastore.NewKey("/local/filesroot")
 		val, err := nd.Repo.Datastore().Get(dsk)
+		cData, err := cid.Parse(val)
 		flog.Info(" KEY Read Error ============     ", err)
 
-		flog.Info("Value for the MFS ROOT =======   ", val)
+		flog.Info("Value for the MFS ROOT =======   ", cData.String())
 
 		flog.Info("Node data File read  =========================    ", nd.Identity.String())
 
