@@ -8,9 +8,9 @@ import (
 
 	"github.com/ipfs/go-ipfs/core/commands/cmdenv"
 
-	"github.com/ipfs/go-ipfs-cmds"
-	"github.com/ipfs/go-ipfs-files"
-	"github.com/ipfs/interface-go-ipfs-core"
+	cmds "github.com/ipfs/go-ipfs-cmds"
+	files "github.com/ipfs/go-ipfs-files"
+	iface "github.com/ipfs/interface-go-ipfs-core"
 	"github.com/ipfs/interface-go-ipfs-core/path"
 )
 
@@ -57,7 +57,7 @@ var CatCmd = &cmds.Command{
 		if err != nil {
 			return err
 		}
-
+		log.Info("IPFS CAT PATH    ==================     ", req.Arguments)
 		readers, length, err := cat(req.Context, api, req.Arguments, int64(offset), int64(max))
 		if err != nil {
 			return err

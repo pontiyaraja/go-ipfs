@@ -27,7 +27,7 @@ import (
 	bserv "github.com/ipfs/go-blockservice"
 	bstore "github.com/ipfs/go-ipfs-blockstore"
 	exchange "github.com/ipfs/go-ipfs-exchange-interface"
-	"github.com/ipfs/go-ipfs-provider"
+	provider "github.com/ipfs/go-ipfs-provider"
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
 	mfs "github.com/ipfs/go-mfs"
