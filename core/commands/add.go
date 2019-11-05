@@ -21,6 +21,8 @@ import (
 
 var addlog = logging.Logger("cmds/add")
 
+//var flog = logging.Logger("cmds/files")
+
 // ErrDepthLimitExceeded indicates that the max depth has been exceeded.
 var ErrDepthLimitExceeded = fmt.Errorf("depth limit exceeded")
 
@@ -220,7 +222,7 @@ You can now check what blocks have been created by:
 		}
 
 		opts = append(opts, nil) // events option placeholder
-
+		addlog.Debug(" IN ADD =================================================    PANDIYAAaaaaaaaaaa")
 		var added int
 		addit := toadd.Entries()
 		for addit.Next() {
@@ -228,11 +230,14 @@ You can now check what blocks have been created by:
 			errCh := make(chan error, 1)
 			events := make(chan interface{}, adderOutChanSize)
 			opts[len(opts)-1] = options.Unixfs.Events(events)
-
 			go func() {
 				var err error
 				defer close(events)
-				_, err = api.Unixfs().Add(req.Context, addit.Node(), opts...)
+				datap, err := api.Unixfs().Add(req.Context, addit.Node(), opts...)
+				addlog.Info("Pontiya ROOT $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$    ", datap.Root().String())
+				addlog.Info("Pontiya CID $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$    ", datap.Cid().String())
+				addlog.Info("Pontiya REMAINDER $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$    ", datap.Remainder())
+				//addlog.Info("Pontiya PATH $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$    ", datap.Path)
 				errCh <- err
 			}()
 
