@@ -98,3 +98,5 @@ require (
 	golang.org/x/sys v0.0.0-20190926180325-855e68c8590b
 	gopkg.in/cheggaaa/pb.v1 v1.0.28
 )
+
+go 1.13
