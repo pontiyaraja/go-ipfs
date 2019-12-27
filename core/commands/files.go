@@ -20,21 +20,15 @@ import (
 	bservice "github.com/ipfs/go-blockservice"
 	cid "github.com/ipfs/go-cid"
 	cidenc "github.com/ipfs/go-cidutil/cidenc"
-<<<<<<< HEAD
 	cmds "github.com/ipfs/go-ipfs-cmds"
 	offline "github.com/ipfs/go-ipfs-exchange-offline"
-=======
 	"github.com/ipfs/go-datastore"
->>>>>>> debugging code
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
 	dag "github.com/ipfs/go-merkledag"
 	"github.com/ipfs/go-mfs"
 	ft "github.com/ipfs/go-unixfs"
-<<<<<<< HEAD
 	iface "github.com/ipfs/interface-go-ipfs-core"
-=======
->>>>>>> debugging code
 	path "github.com/ipfs/interface-go-ipfs-core/path"
 	mh "github.com/multiformats/go-multihash"
 )
@@ -558,10 +552,9 @@ Examples:
 
 		dsk := datastore.NewKey("/local/filesroot")
 		val, err := nd.Repo.Datastore().Get(dsk)
-		cData, err := cid.Parse(val)
 		flog.Info(" KEY Read Error ============     ", err)
 
-		flog.Info("Value for the MFS ROOT =======   ", cData.String())
+		flog.Info("Value for the MFS ROOT =======   ", val)
 
 		flog.Info("Node data File read  =========================    ", nd.Identity.String())
 
