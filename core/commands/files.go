@@ -10,11 +10,8 @@ import (
 	"sort"
 	"strings"
 
-	cmds "github.com/ipfs/go-ipfs-cmds"
-	offline "github.com/ipfs/go-ipfs-exchange-offline"
 	"github.com/ipfs/go-ipfs/core"
 	"github.com/ipfs/go-ipfs/core/commands/cmdenv"
-	iface "github.com/ipfs/interface-go-ipfs-core"
 
 	"github.com/dustin/go-humanize"
 	bservice "github.com/ipfs/go-blockservice"
