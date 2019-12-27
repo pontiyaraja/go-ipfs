@@ -21,7 +21,7 @@ import (
 	cid "github.com/ipfs/go-cid"
 	cidenc "github.com/ipfs/go-cidutil/cidenc"
 	//cmds "github.com/ipfs/go-ipfs-cmds"
-	offline "github.com/ipfs/go-ipfs-exchange-offline"
+	//offline "github.com/ipfs/go-ipfs-exchange-offline"
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
 	dag "github.com/ipfs/go-merkledag"
@@ -549,12 +549,12 @@ Examples:
 			return err
 		}
 
-		dsk := datastore.NewKey("/local/filesroot")
-		val, err := nd.Repo.Datastore().Get(dsk)
-		cData, err := cid.Parse(val)
-		flog.Info(" KEY Read Error ============     ", err)
+		// dsk := datastore.NewKey("/local/filesroot")
+		// val, err := nd.Repo.Datastore().Get(dsk)
+		// cData, err := cid.Parse(val)
+		// flog.Info(" KEY Read Error ============     ", err)
 
-		flog.Info("Value for the MFS ROOT =======   ", cData.String())
+		// flog.Info("Value for the MFS ROOT =======   ", cData.String())
 
 		flog.Info("Node data File read  =========================    ", nd.Identity.String())
 
