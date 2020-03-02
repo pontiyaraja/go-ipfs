@@ -17,9 +17,9 @@ import (
 	bservice "github.com/ipfs/go-blockservice"
 	cid "github.com/ipfs/go-cid"
 	cidenc "github.com/ipfs/go-cidutil/cidenc"
+	"github.com/ipfs/go-datastore"
 	cmds "github.com/ipfs/go-ipfs-cmds"
 	offline "github.com/ipfs/go-ipfs-exchange-offline"
-	"github.com/ipfs/go-datastore"
 	ipld "github.com/ipfs/go-ipld-format"
 	logging "github.com/ipfs/go-log"
 	dag "github.com/ipfs/go-merkledag"
@@ -998,12 +998,12 @@ var filesRmCmd = &cmds.Command{
 		ShortDescription: `
 Remove files or directories.
 
-    $ ipfs files rm /foo
+    $ ipfs files rm /foo <password>
     $ ipfs files ls /bar
     cat
     dog
     fish
-    $ ipfs files rm -r /bar
+    $ ipfs files rm -r /bar <password>
 `,
 	},
 
@@ -1020,6 +1020,13 @@ Remove files or directories.
 			return err
 		}
 
+		if len(req.Arguments) < 2 {
+			return errors.New("password required to remove file")
+		}
+		password := req.Arguments[1]
+		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
+			return errors.New("password required to remove file")
+		}
 		path, err := checkPath(req.Arguments[0])
 		if err != nil {
 			return err
@@ -1033,6 +1040,8 @@ Remove files or directories.
 		if path[len(path)-1] == '/' {
 			path = path[:len(path)-1]
 		}
+		flog.Debug("Arguments  ---------------------------- $$$$$$$$$$$$$$$$ ========================== ", req.Arguments)
+		req.Arguments = req.Arguments[:len(req.Arguments)-1]
 
 		// if '--force' specified, it will remove anything else,
 		// including file, directory, corrupted node, etc
