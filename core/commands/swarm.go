@@ -59,6 +59,8 @@ ipfs peers in the internet.
 		"disconnect": swarmDisconnectCmd,
 		"filters":    swarmFiltersCmd,
 		"peers":      swarmPeersCmd,
+		"generate":   genSwarmKeyCmd,
+		"update":     updateSwarmKeyCmd,
 	},
 }
 
@@ -420,14 +422,40 @@ ipfs swarm connect /ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N
 			}
 			output[i] += " success"
 		}
+		return cmds.EmitOnce(res, &stringList{output})
+	},
+	Encoders: cmds.EncoderMap{
+		cmds.Text: cmds.MakeTypedEncoder(stringListEncoder),
+	},
+	Type: stringList{},
+}
+
+var genSwarmKeyCmd = &cmds.Command{
+	Helptext: cmds.HelpText{
+		Tagline: "generates new swarm key.",
+		ShortDescription: `
+'ipfs swarm generate' generates a new swarm key.
+
+ipfs swarm generate
+`,
+	},
+	Options: []cmds.Option{
+		cmds.StringOption("swarmkeyPath", "path to read swarm key."),
+	},
+	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
+		swarmKey, err := generateSwarm()
+		if err != nil {
+			return err
+		}
 		swarmKeyPath, ok := req.Options["swarmkeyPath"].(string)
-		swarmKey, ok1 := req.Options["swarmkey"].(string)
 		//write swarm key
-		if ok == true && ok1 == true {
-			err = os.Remove(swarmKeyPath) //"/Users/pandiyarajaramamoorthy/Downloads/swarm.key")
-			if err != nil {
-				return err
+		if ok {
+			if _, err := os.Stat(swarmKeyPath); os.IsExist(err) {
+				if err = os.Remove(swarmKeyPath); err != nil { //"/Users/pandiyarajaramamoorthy/Downloads/swarm.key")
+					return err
+				}
 			}
+
 			fl, err := os.Create(swarmKeyPath)
 			if err != nil {
 				return err
@@ -435,13 +463,60 @@ ipfs swarm connect /ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N
 
 			d1 := []byte(swarmKey) //"/key/swarm/psk/1.0.0/\n/base16/\nbecb784f7bd2cb51bb964b649ba3ea8fd068f4af2cef85a47a7051006d4d0865")
 			//err = ioutil.WriteFile(swarmKeyPath, d1, 0644) //"/Users/pandiyarajaramamoorthy/Downloads/swarm.key", d1, 0644)
-			_, err = fl.Write(d1)
-			if err != nil {
+			if _, err = fl.Write(d1); err != nil {
+				fl.Close()
 				return err
 			}
 			fl.Close()
 		}
-		return cmds.EmitOnce(res, &stringList{output})
+		return cmds.EmitOnce(res, &stringList{[]string{swarmKey}})
+	},
+	Encoders: cmds.EncoderMap{
+		cmds.Text: cmds.MakeTypedEncoder(stringListEncoder),
+	},
+	Type: stringList{},
+}
+
+var updateSwarmKeyCmd = &cmds.Command{
+	Helptext: cmds.HelpText{
+		Tagline: "update existing swarm key.",
+		ShortDescription: `
+'ipfs swarm update' updates an existing swarm key.
+
+ipfs swarm update
+`,
+	},
+	Options: []cmds.Option{
+		cmds.StringOption("swarmkey", "swarm key to update"),
+		cmds.StringOption("swarmkeyPath", "path to read swarm key."),
+	},
+	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
+		swarmKeyPath, ok := req.Options["swarmkeyPath"].(string)
+		swarmKey, ok1 := req.Options["swarmkey"].(string)
+		//write swarm key
+		if ok == ok1 == true {
+			if _, err := os.Stat(swarmKeyPath); os.IsExist(err) {
+				if err = os.Remove(swarmKeyPath); err != nil { //"/Users/pandiyarajaramamoorthy/Downloads/swarm.key")
+					return err
+				}
+			}
+
+			fl, err := os.Create(swarmKeyPath)
+			if err != nil {
+				return err
+			}
+
+			//fmt.Fprintln(os.Stdout, "swarm key ", swarmKey, formSwarmKey(swarmKey))
+
+			d1 := []byte(formSwarmKey(swarmKey)) //"/key/swarm/psk/1.0.0/\n/base16/\nbecb784f7bd2cb51bb964b649ba3ea8fd068f4af2cef85a47a7051006d4d0865")
+			//err = ioutil.WriteFile(swarmKeyPath, d1, 0644) //"/Users/pandiyarajaramamoorthy/Downloads/swarm.key", d1, 0644)
+			if _, err = fl.Write(d1); err != nil {
+				fl.Close()
+				return err
+			}
+			fl.Close()
+		}
+		return cmds.EmitOnce(res, &stringList{[]string{swarmKey}})
 	},
 	Encoders: cmds.EncoderMap{
 		cmds.Text: cmds.MakeTypedEncoder(stringListEncoder),
@@ -836,4 +911,8 @@ func generateSwarm() (string, error) {
 		return "", err
 	}
 	return fmt.Sprint(fmt.Sprintln("/key/swarm/psk/1.0.0/"), fmt.Sprintln("/base16/"), fmt.Sprint(hex.EncodeToString(key))), err
+}
+
+func formSwarmKey(key string) string {
+	return fmt.Sprint(fmt.Sprintln("/key/swarm/psk/1.0.0/"), fmt.Sprintln("/base16/"), fmt.Sprint(key))
 }
