@@ -89,3 +89,7 @@ ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/start_ipfs"]
 
 # Execute the daemon subcommand by default
 CMD ["daemon", "--migrate=true"]
+
+# generate swarm key
+# CMD go get github.com/Kubuxu/go-ipfs-swarm-key-gen/ipfs-swarm-key-gen
+# CMD ipfs-swarm-key-gen > $IPFS_PATH/swarm.key

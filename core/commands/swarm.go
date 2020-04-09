@@ -2,9 +2,12 @@ package commands
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"path"
 	"sort"
 	"sync"
@@ -34,6 +37,11 @@ const (
 
 type stringList struct {
 	Strings []string
+}
+
+type customStringList struct {
+	Strings  []string
+	SwarmKey string
 }
 
 type addrMap struct {
@@ -281,6 +289,7 @@ var swarmAddrsLocalCmd = &cmds.Command{
 	},
 	Options: []cmds.Option{
 		cmds.BoolOption("id", "Show peer ID in addresses."),
+		cmds.StringOption("swarmkeyPath", "path to read swarm key."),
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
 		api, err := cmdenv.GetApi(env, req)
@@ -307,10 +316,35 @@ var swarmAddrsLocalCmd = &cmds.Command{
 			}
 			addrs = append(addrs, saddr)
 		}
+		var swarmKey string
+		swarmKeyPath, ok := req.Options["swarmkeyPath"].(string)
+		if ok {
+			fl, err := os.Create(swarmKeyPath)
+			if err != nil {
+				return err
+			}
+			swarmKey, err := generateSwarm()
+			if err != nil {
+				return err
+			}
+			d1 := []byte(swarmKey) //"/key/swarm/psk/1.0.0/\n/base16/\nbecb784f7bd2cb51bb964b649ba3ea8fd068f4af2cef85a47a7051006d4d0865")
+			_, err = fl.Write(d1)
+			if err != nil {
+				return err
+			}
+			fl.Close()
+
+			// //read swarm key here
+			// swarmKey, err = ioutil.ReadFile(swarmKeyPath) //"/Users/pandiyarajaramamoorthy/.ipfs/swarm.key")
+			// if err != nil {
+			// 	return err
+			// }
+		}
+
 		sort.Strings(addrs)
-		return cmds.EmitOnce(res, &stringList{addrs})
+		return cmds.EmitOnce(res, &customStringList{addrs, swarmKey})
 	},
-	Type: stringList{},
+	Type: customStringList{},
 	Encoders: cmds.EncoderMap{
 		cmds.Text: cmds.MakeTypedEncoder(stringListEncoder),
 	},
@@ -362,6 +396,10 @@ ipfs swarm connect /ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3
 	Arguments: []cmds.Argument{
 		cmds.StringArg("address", true, true, "Address of peer to connect to.").EnableStdin(),
 	},
+	Options: []cmds.Option{
+		cmds.StringOption("swarmkey", "swarm key to update"),
+		cmds.StringOption("swarmkeyPath", "path to read swarm key."),
+	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
 		api, err := cmdenv.GetApi(env, req)
 		if err != nil {
@@ -385,7 +423,27 @@ ipfs swarm connect /ip4/104.131.131.82/tcp/4001/ipfs/QmaCpDMGvV2BGHeYERUEnRQAwe3
 			}
 			output[i] += " success"
 		}
+		swarmKeyPath, ok := req.Options["swarmkeyPath"].(string)
+		swarmKey, ok1 := req.Options["swarmkey"].(string)
+		//write swarm key
+		if ok == true && ok1 == true {
+			err = os.Remove(swarmKeyPath) //"/Users/pandiyarajaramamoorthy/Downloads/swarm.key")
+			if err != nil {
+				return err
+			}
+			fl, err := os.Create(swarmKeyPath)
+			if err != nil {
+				return err
+			}
 
+			d1 := []byte(swarmKey) //"/key/swarm/psk/1.0.0/\n/base16/\nbecb784f7bd2cb51bb964b649ba3ea8fd068f4af2cef85a47a7051006d4d0865")
+			//err = ioutil.WriteFile(swarmKeyPath, d1, 0644) //"/Users/pandiyarajaramamoorthy/Downloads/swarm.key", d1, 0644)
+			_, err = fl.Write(d1)
+			if err != nil {
+				return err
+			}
+			fl.Close()
+		}
 		return cmds.EmitOnce(res, &stringList{output})
 	},
 	Encoders: cmds.EncoderMap{
@@ -826,4 +884,13 @@ func filtersRemove(r repo.Repo, cfg *config.Config, toRemoveFilters []string) ([
 	}
 
 	return removed, nil
+}
+
+func generateSwarm() (string, error) {
+	key := make([]byte, 32)
+	_, err := rand.Read(key)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(fmt.Sprintln("/key/swarm/psk/1.0.0/"), fmt.Sprintln("/base16/"), fmt.Sprint(hex.EncodeToString(key))), err
 }
