@@ -1,8 +1,12 @@
 package corehttp
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -33,6 +37,7 @@ cli arguments:
 	ipfs config API.HTTPHeaders --json '{"Access-Control-Allow-Origin": ["*"]}'
 	ipfs daemon
 `
+const URL = "http://138.197.160.170:2048/user/getKey"
 
 // APIPath is the path at which the API is mounted.
 const APIPath = "/api/v0"
@@ -42,6 +47,16 @@ var defaultLocalhostOrigins = []string{
 	"https://127.0.0.1:<port>",
 	"http://localhost:<port>",
 	"https://localhost:<port>",
+}
+
+type axillaryInput struct {
+	Nonce     string `json:"_nonce"`
+	Signature string `json:"_userSignature"`
+}
+
+type ChiperResponse struct {
+	WalletAddress string `json:"_userAddress"`
+	ChiperText    string `json:"_userKey"`
 }
 
 func addCORSFromEnv(c *cmdsHttp.ServerConfig) {
@@ -172,10 +187,68 @@ func CheckVersionOption() ServeOption {
 					}
 				}
 			}
-
+			//authentication would be user chipertext, nonce and signature to validate chipertext
+			var response ChiperResponse
+			chiperText := r.Header.Get("chipertext")
+			signature := r.Header.Get("signature")
+			nonce := r.Header.Get("nonce")
+			if len(strings.TrimSpace(chiperText)) <= 0 && len(strings.TrimSpace(nonce)) <= 0 && len(strings.TrimSpace(signature)) <= 0 {
+				http.Error(w, "missing headers fields", http.StatusBadRequest)
+				return
+			}
+			input := axillaryInput{Nonce: nonce, Signature: signature}
+			inputbyt, err := json.Marshal(input)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("invalid input %+v", err), http.StatusBadRequest)
+				return
+			}
+			err = doRequest(URL, http.MethodPost, inputbyt, &response)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("authentication failed %+v", err), http.StatusBadRequest)
+				return
+			}
+			if strings.Compare(response.ChiperText, chiperText) != 0 {
+				http.Error(w, "failed to match authentication data", http.StatusBadRequest)
+				return
+			}
 			mux.ServeHTTP(w, r)
 		})
 
 		return mux, nil
 	})
+}
+
+func doRequest(URL, method string, body []byte, responseData interface{}) error {
+	fmt.Println(URL)
+	var bData io.Reader
+	if body != nil {
+		bData = bytes.NewReader(body)
+	}
+	req, err := http.NewRequest(method, URL, bData)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("got wrong status from server")
+	}
+	respByte, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	if responseData != nil {
+		err = json.NewDecoder(bytes.NewReader(respByte)).Decode(responseData)
+		if err != nil {
+			return err
+		}
+	}
+	return err
 }
