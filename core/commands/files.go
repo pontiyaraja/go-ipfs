@@ -114,15 +114,6 @@ var filesStatCmd = &cmds.Command{
 		cmds.BoolOption(filesWithLocalOptionName, "Compute the amount of the dag that is local, and if possible the total size"),
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
-		if len(req.Arguments) < 2 {
-			return errors.New("password required to get file status")
-		}
-
-		password := req.Arguments[1]
-		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
-			return errors.New("invalid password to get file status")
-		}
-
 		_, err := statGetFormatOptions(req)
 		if err != nil {
 			return cmds.Errorf(cmds.ErrClient, err.Error())
@@ -320,15 +311,6 @@ var filesCpCmd = &cmds.Command{
 		cmds.StringArg("dest", true, false, "Destination to copy object to."),
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
-		if len(req.Arguments) < 3 {
-			return errors.New("password required to copy file")
-		}
-
-		password := req.Arguments[2]
-		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
-			return errors.New("invalid password to copy file")
-		}
-
 		nd, err := cmdenv.GetNode(env)
 		if err != nil {
 			return err
@@ -429,15 +411,6 @@ Examples:
 		cmds.BoolOption(dontSortOptionName, "Do not sort; list entries in directory order."),
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
-		if len(req.Arguments) < 2 {
-			return errors.New("password required to list file")
-		}
-
-		password := req.Arguments[1]
-		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
-			return errors.New("invalid password to list file")
-		}
-
 		var arg string
 
 		if len(req.Arguments) == 0 {
@@ -553,7 +526,7 @@ will read the entire file similar to unix cat.
 
 Examples:
 
-    $ ipfs files read /test/hello <password>
+    $ ipfs files read /test/hello
     hello
         `,
 	},
@@ -566,15 +539,6 @@ Examples:
 		cmds.Int64Option(filesCountOptionName, "n", "Maximum number of bytes to read."),
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
-		if len(req.Arguments) < 2 {
-			return errors.New("password required to read file")
-		}
-
-		password := req.Arguments[1]
-		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
-			return errors.New("invalid password to read file")
-		}
-
 		nd, err := cmdenv.GetNode(env)
 		if err != nil {
 			return err
@@ -664,15 +628,6 @@ Example:
 		cmds.StringArg("dest", true, false, "Destination path for file to be moved to."),
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
-		if len(req.Arguments) < 3 {
-			return errors.New("password required to move file")
-		}
-
-		password := req.Arguments[2]
-		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
-			return errors.New("invalid password to move file")
-		}
-
 		nd, err := cmdenv.GetNode(env)
 		if err != nil {
 			return err
@@ -754,15 +709,6 @@ stat' on the file or any of its ancestors.
 		hashOption,
 	},
 	Run: func(req *cmds.Request, re cmds.ResponseEmitter, env cmds.Environment) (retErr error) {
-		if len(req.Arguments) < 2 {
-			return errors.New("password required to write file")
-		}
-
-		password := req.Arguments[1]
-		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
-			return errors.New("invalid password to write file")
-		}
-
 		path, err := checkPath(req.Arguments[0])
 		if err != nil {
 			return err
@@ -878,15 +824,6 @@ Examples:
 		hashOption,
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
-		if len(req.Arguments) < 2 {
-			return errors.New("password required to make a directory")
-		}
-
-		password := req.Arguments[1]
-		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
-			return errors.New("invalid password to make a directory")
-		}
-
 		n, err := cmdenv.GetNode(env)
 		if err != nil {
 			return err
@@ -932,15 +869,6 @@ are run with the '--flush=false'.
 		cmds.StringArg("path", false, false, "Path to flush. Default: '/'."),
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
-		if len(req.Arguments) < 2 {
-			return errors.New("password required to flush file")
-		}
-
-		password := req.Arguments[1]
-		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
-			return errors.New("invalid password to flush file")
-		}
-
 		nd, err := cmdenv.GetNode(env)
 		if err != nil {
 			return err
@@ -981,15 +909,6 @@ Change the cid version or hash function of the root node of a given path.
 		hashOption,
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
-		if len(req.Arguments) < 2 {
-			return errors.New("password required to change cid version")
-		}
-
-		password := req.Arguments[1]
-		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
-			return errors.New("invalid password to change cid version")
-		}
-
 		nd, err := cmdenv.GetNode(env)
 		if err != nil {
 			return err
@@ -1058,15 +977,6 @@ Remove files or directories.
 		cmds.BoolOption(forceOptionName, "Forcibly remove target at path; implies -r for directories"),
 	},
 	Run: func(req *cmds.Request, res cmds.ResponseEmitter, env cmds.Environment) error {
-		if len(req.Arguments) < 2 {
-			return errors.New("password required to read file")
-		}
-
-		password := req.Arguments[1]
-		if len(password) <= 0 || strings.Compare(password, "1234") != 0 {
-			return errors.New("invalid password to read file")
-		}
-
 		nd, err := cmdenv.GetNode(env)
 		if err != nil {
 			return err
