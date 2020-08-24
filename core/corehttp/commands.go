@@ -187,10 +187,14 @@ func CheckVersionOption() ServeOption {
 					}
 				}
 			}
-			mux.ServeHTTP(w, r)
+			internal := r.Header.Get("internal")
+			if strings.Compare(internal, "true") == 0 {
+				mux.ServeHTTP(w, r)
+				return
+			}
 			//authentication would be user chipertext, nonce and signature to validate chipertext
 			var response ChiperResponse
-			chiperText := r.Header.Get("chipertext")
+			chiperText := r.Header.Get("ciphertext")
 			signature := r.Header.Get("signature")
 			nonce := r.Header.Get("nonce")
 			if len(strings.TrimSpace(chiperText)) <= 0 && len(strings.TrimSpace(nonce)) <= 0 && len(strings.TrimSpace(signature)) <= 0 {
@@ -212,7 +216,7 @@ func CheckVersionOption() ServeOption {
 				http.Error(w, "failed to match authentication data", http.StatusBadRequest)
 				return
 			}
-			//mux.ServeHTTP(w, r)
+			mux.ServeHTTP(w, r)
 		})
 
 		return mux, nil
